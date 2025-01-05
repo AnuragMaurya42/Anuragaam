@@ -140,9 +140,31 @@ export const getprofile = async(req, res)=>{
 export const updateprofile = async(req, res)=>{
 try {
 
-  
-  
-} catch (error) {
+  const {userId} = req.id;
+  const{boi,gender} = req.body;
+  const profilePicture = req.file;
+
+let cloudResponse ;
+
+if(profilePicture){
+   const fileUri = getDatauri(profilePicture);
+  cloudResponse =  await cloudinary.uploader.upload(fileUri);
+
+}
+
+const user = await User.findById(userId);
+
+if(!user){
+  return res.status(404).json({message: "User not found", success:false});
+}
+
+if(bio) user.bio = bio;
+if(gender) user.gender = gender;
+if(profilePicture) user.profilePicture = cloudResponse.secure_url;
+await user.save();
+return res.status(200).json({message: "Profile updated", success:true});
+
+} catch (error) {  
   console.log(error);
   return res.status(500).json({
     message: "Internal server error",
@@ -150,6 +172,54 @@ try {
   });
   
 }
+};
 
+export const followorunfollow = async(req, res)=>{
+try {
+  
+  const follwkarnevala = req.id;
+  const jiskofollowkiya = req.params.userId;
+  
+  if(follwkarnevala === jiskofollowkiya){
+    return res.status(400).json({message: "You cannot follow yourself", success:false});
+  }
+  const user = await User.findById(follwkarnevala);
+  const targetUser = await User.findById(jiskofollowkiya);
+  if(!user || !targetUser){
+    return res.status(404).json({message: "User not found", success:false});
+  }
+// follow karna hai ya unfollow karna 
+// check karna hai ki user kya follow kar raha hai ya nahi
+
+const isFollowing = user.following.includes(jiskofollowkiya);
+// if user is following the target user then unfollow karna hai
+
+if(isFollowing){
+  await Promise.all([
+    User.findByIdAndUpdate(follwkarnevala, {$pull: {following: jiskofollowkiya}}),
+    User.findByIdAndUpdate(jiskofollowkiya, {$pull: {followers: follwkarnevala}}),
+  ]);
+  return res.status(200).json({
+    message: "Unfollowed",
+    success:true
+  })
+}
+else{
+
+  await Promise.all([
+  User.findByIdAndUpdate(follwkarnevala, {$push: {following: jiskofollowkiya}}),
+  User.findByIdAndUpdate(jiskofollowkiya, {$push: {followers: follwkarnevala}}),
+]);
+return res.status(200).json({
+  message: "followed",
+  success:true
+})
+}
+
+
+} catch (error) {
+  console.log(error);
+
+}
 
 }
