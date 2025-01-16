@@ -7,13 +7,15 @@ try {
     const token = req.cookies.token;
 
     if(!token){
-        return res.status(401).json({message: "Unauthorized"});
+        return res.status(401).json({message: "Unauthorized1",
+        success: false
+        });
     }
 
-    const decode = await jwt.verify(token, process.env.SECRET_KEY1);
+    const decode =  jwt.verify(token, process.env.SECRET_KEY1);
   
     if(!decode){
-        return res.status(401).json({message: "Unauthorized"});
+        return res.status(401).json({message: "Unauthorized2"});
     }
 
     req.id = decode.id;
@@ -21,7 +23,8 @@ try {
     
 } catch (error) {
     console.log(error);
-    res.status(401).json({message: "Unauthorized"});
+    res.status(401).json({message: "Unauthorized3"});
 }
 
 };
+export default isAuthenticated;

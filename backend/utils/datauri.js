@@ -1,4 +1,4 @@
-import Datauri from 'datauri';
+import Datauri from 'datauri/parser.js';
 import path from 'path';
 
 const parser = new Datauri();
