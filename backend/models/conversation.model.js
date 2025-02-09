@@ -9,4 +9,4 @@ message:[
     }
 ]
 });
-export default Conversation = mongoose.model('Conversation', coversationSchema);
+export const Conversation = mongoose.model('Conversation', coversationSchema);

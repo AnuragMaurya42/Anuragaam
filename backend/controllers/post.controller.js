@@ -1,7 +1,7 @@
 import sharp from "sharp";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
-import comment from "../models/comment.model.js";
+import { Comment } from "../models/comment.model.js";
 
 export const addPost = async (req, res) => {
   try {
@@ -155,7 +155,7 @@ export const dislikePost = async (req, res) => {
   }
 };
 
-const addComment = async (req, res) => {
+export const addComment = async (req, res) => {
   try {
     const commentkarnewalaId = req.params.id;
     const postId = req.params.postId;

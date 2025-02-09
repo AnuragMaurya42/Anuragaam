@@ -5,7 +5,9 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import connectDB from './utils/db.js';
 import UserRoutes from './routes/user.route.js';
+import PostRoutes from './routes/post.route.js';
 
+import MessageRoutes from './routes/message.route.js';
 import userRoute from "./routes/user.route.js";
 // import postRoute from "./routes/post.route.js";
 // import messageRoute from "./routes/message.route.js";
@@ -39,8 +41,9 @@ app.get('/', (req, res) => {
 
 // yaha pe routes dalne hain
 app.use("/api/v1/user", userRoute);
-// app.use("/api/v1/post", postRoute);
-// app.use("/api/v1/message", messageRoute);
+app.use("/api/v1/post", PostRoutes);
+app.use("/api/v1/message", MessageRoutes);
+
 
 
 
