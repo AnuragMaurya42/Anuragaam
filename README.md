@@ -30,9 +30,6 @@ npm start
 
 If you would like to contribute to this project, please fork the repository and submit a pull request.
 
-## License
-
-This project is licensed under the MIT License.
 
 ## Screenshot
 
@@ -42,10 +39,7 @@ This project is licensed under the MIT License.
 
 The Anuragaam Project is a comprehensive solution designed to streamline task management and enhance productivity. It aims to provide users with an intuitive interface for organizing tasks, collaborating with team members, and customizing workflows to fit their specific needs. The project is built using modern web technologies such as React, Node.js, and MongoDB.
 
-### Additional Features
 
-- Feature 4: Advanced reporting and analytics
-- Feature 5: Integration with third-party services
 
 ## Additional Screenshots
 

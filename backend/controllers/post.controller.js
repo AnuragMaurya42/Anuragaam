@@ -2,51 +2,69 @@ import sharp from "sharp";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
+import cloudinary from "../utils/cloudinary.js";
+
 
 export const addPost = async (req, res) => {
   try {
     const { caption } = req.body;
     const image = req.file;
-
     const authorId = req.id;
+
+    console.log("author id post me hai ye " , authorId);
+
+    if(!authorId){
+      console.log("auther kaha haiiiiiiiiiiiii");
+
+    }
+
     if (!image) {
       return res.status(400).json({
-        message: "Image is required",
+        message: 'Image is required',
         success: false,
       });
     }
 
-    // we have to optimise the image before uploading it to cloudinary
-
-    const optimizeimage = await sharp(image.buffer)
+    // Optimize the image before uploading it to Cloudinary
+    const optimizedImage = await sharp(image.buffer)
       .resize({ width: 500, height: 500 })
-      .toFormat("jpeg", { quality: 80 })
+      .toFormat('jpeg', { quality: 80 })
       .toBuffer();
 
-    const fileUri = `data:image/jpeg;base64,${optimizeimage.toString(
-      "base64"
-    )}`;
+    const fileUri = `data:image/jpeg;base64,${optimizedImage.toString('base64')}`;
 
     const cloudResponse = await cloudinary.uploader.upload(fileUri);
-    const post = new Post.create({
+    const post = new Post({
       caption,
       image: cloudResponse.secure_url,
       author: authorId,
     });
 
+    await post.save();
+
     const user = await User.findById(authorId);
-    if (user) {
+
+    if (!user) {
+      console.log('User not found.');
+    } else {
       user.posts.push(post._id);
       await user.save();
     }
 
-    await post.populat({ path: "author", select: "-password" });
+    // await post.populate({ path: 'author', select: '-password' }).execPopulate();
+    await post.populate({ path: 'author', select: '-password' });
     return res.status(201).json({
-      message: "Post created successfully",
+      message: 'Post created successfully',
       success: true,
+      post, // Optionally include the created post in the response
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: 'An error occurred while creating the post......',
+      success: false,
+      error: error.message,
+    });
   }
 };
 

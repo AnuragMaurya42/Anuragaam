@@ -12,8 +12,12 @@ import { Button } from "./ui/button";
 import { FaHeart } from "react-icons/fa";
 import CommentDialog from "./ui/CommentDialog";
 
-const Post = () => {
+const Post = ({ post }) => {
   const [open, setOpen] = useState(false);
+
+  if (!post) {
+    return <div>Post not found</div>;
+  }
 
   return (
     <div className="my-8 w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -22,10 +26,10 @@ const Post = () => {
         {/* User Info */}
         <div className="flex items-center gap-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src="" alt="post_image" />
-            <AvatarFallback>AM</AvatarFallback>
+            <AvatarImage src={post.author.profilePicture || ''} alt="post_image" />
+            <AvatarFallback>{post.author.username.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
-          <h1 className="font-semibold text-gray-800 dark:text-gray-100">username</h1>
+          <h1 className="font-semibold text-gray-800 dark:text-gray-100">{post.author.username}</h1>
         </div>
 
         {/* Popup Dialog */}
@@ -61,7 +65,7 @@ const Post = () => {
       <div>
         <img
           className="w-full h-auto object-cover max-h-[300px] sm:max-h-[400px] md:max-h-[500px] lg:max-h-[600px]"
-          src="https://plus.unsplash.com/premium_photo-1666278379770-440439b08656?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YW5pbWFsc3xlbnwwfHwwfHx8MA%3D%3D"
+          src={post.image}
           alt="image_post"
         />
       </div>
@@ -78,20 +82,20 @@ const Post = () => {
 
       {/* Post Likes */}
       <div className="px-4">
-        <span className="font-semibold text-gray-800 dark:text-gray-100">1k likes</span>
+        <span className="font-semibold text-gray-800 dark:text-gray-100">{post.likes.length} likes</span>
       </div>
 
       {/* Post Caption */}
       <div className="px-4 py-2">
         <p className="text-sm text-gray-800 dark:text-gray-100">
-          <span className="font-medium mr-2">Username</span>
-          Caption
+          <span className="font-medium mr-2">{post.author.username}</span>
+          {post.caption}
         </p>
         <span
           onClick={() => setOpen(true)}
           className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:underline"
         >
-          View all 10 comments
+          View all {post.comments.length} comments
         </span>
       </div>
 

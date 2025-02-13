@@ -65,7 +65,7 @@ export const login = async (req, res) => {
     }
 
     // Token generation for authentication
-    const token = await jwt.sign(
+    const token =  jwt.sign(
       { userId: user._id },
       process.env.SECRET_KEY1,
       { expiresIn: "30d" }
