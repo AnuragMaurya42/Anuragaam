@@ -31,7 +31,7 @@ const { user } = useSelector((store) => store.auth);
     
     setloading(true)
 
-    const res = await axios.post('http://localhost:8000/api/v1/user/register', formData,{
+    const res = await axios.post('https://anuragaam-app.onrender.com/api/v1/user/register', formData,{
       headers: {
         'Content-Type': 'application/json'
       },withCredentials: true  

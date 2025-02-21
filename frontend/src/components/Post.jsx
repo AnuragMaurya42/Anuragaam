@@ -34,7 +34,7 @@ const Post = ({ post }) => {
   const followHandler = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/user/followorunfollow/${post.author._id}`,
+        `https://anuragaam-app.onrender.com/api/v1/user/followorunfollow/${post.author._id}`,
         {},
         { withCredentials: true }
       );
@@ -51,7 +51,7 @@ const Post = ({ post }) => {
   const unfollowHandler = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/user/followorunfollow/${post.author._id}`,
+        `https://anuragaam-app.onrender.com/api/v1/user/followorunfollow/${post.author._id}`,
         {},
         { withCredentials: true }
       );
@@ -77,7 +77,7 @@ const Post = ({ post }) => {
 
     try {
       const res = await axios.delete(
-        `http://localhost:8000/api/v1/post/delete/${post._id}`,
+        `https://anuragaam-app.onrender.com/api/v1/post/delete/${post._id}`,
         { withCredentials: true }
       );
       if (res.data.success) {
@@ -102,7 +102,7 @@ const Post = ({ post }) => {
   
       // Send request to like or dislike the post
       const res = await axios.get(
-        `http://localhost:8000/api/v1/post/${post._id}/${action}`,
+        `https://anuragaam-app.onrender.com/api/v1/post/${post._id}/${action}`,
         { withCredentials: true }
       );
   
@@ -138,7 +138,7 @@ const Post = ({ post }) => {
 
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/post/comment/${post._id}`,
+        `https://anuragaam-app.onrender.com/api/v1/post/comment/${post._id}`,
         { comment: text },
         {
           headers: {

@@ -36,7 +36,7 @@ const LeftSidebar = () => {
   // Logout handler
   const LogoutHandler = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
+      const res = await axios.get("https://anuragaam-app.onrender.com/api/v1/user/logout", {
         withCredentials: true,
       });
       if (res.data.message) {
@@ -70,7 +70,7 @@ const LeftSidebar = () => {
       setIsLoading(true); // Start the loader
 
       const res = await axios.post(
-        "http://localhost:8000/api/v1/post/addpost",
+        "https://anuragaam-app.onrender.com/api/v1/post/addpost",
         formData,
         {
           headers: {

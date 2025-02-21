@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, Link } from "react-router-dom";
-import useGetUserProfile from "../hooks/useGetUserProfile";
+import useGetUserProfile from "../hooks/useGetUserprofile";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "./ui/button";
 import UserPostsGrid from "./UserPostsGrid";
@@ -29,7 +29,7 @@ const Profile = () => {
       console.log(userProfile._id);
       
       const response = await axios.post(
-        `http://localhost:8000/api/v1/user/followorunfollow/${userProfile._id}`,
+        `https://anuragaam-app.onrender.com/api/v1/user/followorunfollow/${userProfile._id}`,
         {},
         {
           withCredentials: true,

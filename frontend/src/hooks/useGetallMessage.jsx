@@ -12,7 +12,7 @@ const useGetAllMessage = (chatUserId) => {
             try {
                 if (!chatUserId) return;  // Guard clause for no chatUserId
                 
-                const res = await axios.get(`http://localhost:8000/api/v1/message/all/${chatUserId}`, { 
+                const res = await axios.get(`https://anuragaam-app.onrender.com/api/v1/message/all/${chatUserId}`, { 
                     withCredentials: true 
                 });
 

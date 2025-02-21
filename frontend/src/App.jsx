@@ -5,7 +5,7 @@ import Signup from "./components/Signup.jsx";
 import Login from "./components/Login.jsx";
 import Profile from "./components/Profile.jsx";
 import EditProfile from "./components/EditProfile.jsx";
-import Chatpage from "./components/Chatpage.jsx";
+import Chatpage from "./components/ChatPage.jsx";
 import ChatWithUser from "./components/ChatWithUser.jsx";
 import { io } from "socket.io-client";
 import { useEffect, useRef } from "react";
@@ -60,7 +60,7 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      const socketio = io('http://localhost:8000', {
+      const socketio = io('https://anuragaam-app.onrender.com', {
         query: {
           userId: user?._id
         },
