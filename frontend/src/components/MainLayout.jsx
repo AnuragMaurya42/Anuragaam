@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import LeftSidebar from './LeftSidebar';
+import LeftSidebar from './Leftsidebar';
 import RightSidebar from './RightSidebar';
 
 const MainLayout = () => {
