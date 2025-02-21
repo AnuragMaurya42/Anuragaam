@@ -28,8 +28,8 @@ const Chatpage = () => {
       }
     };
 
-    fetchUsers();
-  }, [user._id]);
+    if (user?._id) fetchUsers();
+  }, [user?._id]);
 
   return (
     <div className="flex justify-center h-screen p-4 bg-gray-100">

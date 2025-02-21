@@ -1,33 +1,48 @@
-import React from 'react'
+import useGetRTM from '../hooks/useGetRTM';
+import useGetallMessage from '../hooks/useGetallMessage';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-const Messages = (chatUserId) => {
+const Messages = ({ chatUserId }) => {
+  useGetRTM();
+  useGetallMessage(chatUserId);
+
+  const { messages = [] } = useSelector((store) => store.chat);
+  const { user } = useSelector((store) => store.auth);
+
   return (
-    <div className='overflow-y-auto flex-1 p-4'
-    style={{ 
+    <div
+      className='overflow-y-auto flex-1 p-4'
+      style={{ 
         position: "sticky", 
         bottom: "45px",
-        top:"10px",    // Adjust this value to change the space below the button
+        top: "10px", 
         padding: "10px",
-        // background: "rgb(145 189 233)",
         boxShadow: "0 -2px 4px rgba(0, 0, 0, 0.1)"
-      }}>
-       no message yets
-      ds
-      d
-      Lorem ipsum dolor sit amet<br></br> consectetur<br></br> adipisicing <br></br>elit. Illo fuga commodi similique culpa perferendis repellendus obcaecati assumenda iusto, excepturi optio non 
-      quis. Id excepturi, cupiditate dolores necessitatibus q<br></br>uis ullam aperiam.
-      Lorem ipsum dolor sit amet <br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>consectetur, ad<br></br>ipisicing elit<br></br>. Laborum assumenda, in cumque fugiat non illo quisquam nostrum, consequuntur, quasi quibusdam alias neque rem molestiae tenetur suscipit saepe reiciendis deserunt! Libero!
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Eligendi tempore voluptate, sint, ipsam architecto saepe voluptates<br></br><br></br><br></br>  sit fac<br></br><br></br><br></br>ere incidunt recusandae nemo repellendus perferendis id labore ad, temporibus rerum officiis neque.
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque officiis exercitationem labore illo qui accusamus corporis odit, consectetur, consequatur aliquam beatae ab possimus ducimus provident voluptate quia veniam voluptatibus! Incidunt.
-      <br></br><br></br><br></br>
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum, deleniti. Reprehenderit veniam ullam consectetur vel minima maiores quae totam id! Magni at quisquam aspernatur voluptas consequatur culpa fugit, natus quis.
-      <br></br><br></br><br></br>
-      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquid fugit dolorem modi harum eaque voluptatum, ipsum commodi sapiente dolor repellat rem tempore molestiae quae quia quo tenetur qui sed corporis.lore,
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit corrupti, tenetur ea incidunt quasi debitis impedit ab sed aperiam voluptatum, asperiores iure blanditiis doloribus numquam. Labore possimus laboriosam <br /><br></br>
-      voluptas aliquid!
-      anurag maurya
+      }}
+    >
+      {messages.length > 0 ? (
+        messages.map((msg, index) => (
+          <div 
+            className={`flex ${msg.senderId === user._id ? 'justify-start' : 'justify-end'}`} 
+            key={index}
+          >
+            <div 
+              className={`max-w-xs p-2  ${
+                msg.senderId === user._id 
+                  ? 'text-right text-green-600 font-bold'   // Sent message style (left)
+                  : 'text-left text-red-600 font-bold' // Received message style (right)
+              }`}
+            >
+              {msg.message}
+            </div>
+          </div>
+        ))
+      ) : (
+        <p>No messages yet</p>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Messages
+export default Messages;

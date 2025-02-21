@@ -15,15 +15,17 @@ const io = new Server(server, {
 
 const userSocketMap = {} ; // this map stores socket id corresponding the user id; userId -> socketId
 
-export  const getReceiverSocketId= (receiverId)=>userSocketMap[receiverId];
-
+export const getReceiverSocketId = (receiverId) => userSocketMap[receiverId];
 
 io.on('connection', (socket)=>{
     const userId = socket.handshake.query.userId;
+    
+    
     if(userId){
         userSocketMap[userId] = socket.id;
-        console.log("user connected ", userId ,"socket id =" , `${socket.id} `);
     }
+    
+    
 
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
 

@@ -24,6 +24,13 @@ const RightSidebar = ({ isOpen, setIsOpen }) => {
     fetchUsers();
   }, []);
 
+  // Logout Function
+  const handleLogout = () => {
+    // Clear any authentication tokens or user data here
+    localStorage.removeItem('authToken');
+    navigate('/login'); // Redirect to login page
+  };
+
   return (
     <>
       {/* Sidebar */}
@@ -64,6 +71,15 @@ const RightSidebar = ({ isOpen, setIsOpen }) => {
             <p className="text-xs text-center">RS</p>
           )}
         </div>
+
+        {/* Logout Button - Stick to Bottom */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-lg shadow-md mt-auto"
+          style={{ marginTop: 'auto' }} // Ensure it sticks to the bottom
+        >
+          Logout
+        </button>
       </div>
 
       {/* Toggle Button - Always Visible */}

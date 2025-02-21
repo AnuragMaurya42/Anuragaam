@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Home,
   Search,
@@ -6,41 +6,46 @@ import {
   MessageCircle,
   Heart,
   LogOut,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
-import { setAuthUser } from '../redux/authSlice';
-import { setPosts } from '../redux/postSlice'; // Import setPosts action
-import Posts from './Posts.jsx';
+} from "lucide-react";
+import { toast } from "sonner";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { setAuthUser } from "../redux/authSlice";
+import { setPosts } from "../redux/postSlice"; // Import setPosts action
+import Posts from "./Posts.jsx";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Button } from "./ui/button";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
+  const { likeNotification } = useSelector(
+    (store) => store.realTimeNotification
+  );
 
   // State for the Create Post dialog
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [postImage, setPostImage] = useState(null);
-  const [caption, setCaption] = useState('');
+  const [caption, setCaption] = useState("");
   const [isLoading, setIsLoading] = useState(false); // State for the loader
 
   // Logout handler
   const LogoutHandler = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/api/v1/user/logout', {
+      const res = await axios.get("http://localhost:8000/api/v1/user/logout", {
         withCredentials: true,
       });
       if (res.data.message) {
         dispatch(setAuthUser(null));
-        navigate('/login');
+        navigate("/login");
         toast.success(res.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Logout failed.');
+      toast.error(error.response?.data?.message || "Logout failed.");
       console.error(error);
     }
   };
@@ -53,23 +58,23 @@ const LeftSidebar = () => {
   // Function to handle post submission
   const handlePostSubmit = async () => {
     if (!postImage) {
-      toast.error('Please provide an image.');
+      toast.error("Please provide an image.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('image', postImage);
-    formData.append('caption', caption);
+    formData.append("image", postImage);
+    formData.append("caption", caption);
 
     try {
       setIsLoading(true); // Start the loader
 
       const res = await axios.post(
-        'http://localhost:8000/api/v1/post/addpost',
+        "http://localhost:8000/api/v1/post/addpost",
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
         }
@@ -81,14 +86,12 @@ const LeftSidebar = () => {
         toast.success(res.data.message);
         setIsDialogOpen(false);
         setPostImage(null);
-        setCaption('');
+        setCaption("");
       } else {
-        toast.error(res.data.message || 'Failed to create post.');
+        toast.error(res.data.message || "Failed to create post.");
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || 'Failed to create post.'
-      );
+      toast.error(error.response?.data?.message || "Failed to create post.");
       console.error(error);
     } finally {
       setIsLoading(false); // Stop the loader
@@ -96,58 +99,46 @@ const LeftSidebar = () => {
   };
 
   const menuItems = [
-    { name: 'Home', icon: <Home />, onClick: () => navigate('/') },
-    { name: 'Search', icon: <Search />, onClick: () => navigate('/search') },
+    { name: "Home", icon: <Home />, onClick: () => navigate("/") },
+    { name: "Search", icon: <Search />, onClick: () => navigate("/search") },
     {
-      name: 'Create',
+      name: "Create",
       icon: <PlusSquare />,
       onClick: () => setIsDialogOpen(true),
     },
     {
-      name: 'Notifications',
+      name: "Notifications",
       icon: <Heart />,
-      onClick: () => navigate('/notifications'),
+      // onClick: () => navigate("/notifications"),
     },
     {
-      name: 'Messages',
+      name: "Messages",
       icon: <MessageCircle />,
-      onClick: () => navigate('/chat'),
+      onClick: () => navigate("/chat"),
     },
-
-
-
     {
-      name: 'Profile',
+      name: "Profile",
       icon: (
-        <Avatar style={{ width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden' }}>
-          <AvatarImage 
-            src={user?.profilePicture || 'https://via.placeholder.com/150'} 
-            alt={user?.username} 
-            style={{ 
-              width: '50%', 
-              height: '50%', 
-              objectFit: 'cover' 
-            }} 
+        <Avatar className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 flex items-center justify-center">
+          <AvatarImage
+            src={user?.profilePicture || "https://via.placeholder.com/150"}
+            alt={user?.username}
+            className="w-full h-full object-cover"
           />
-          <AvatarFallback style={{ 
-            backgroundColor: '#ccc', 
-            color: '#fff', 
-            width: '100%', 
-            height: '100%', 
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 'bold',
-            borderRadius: '50%',
-          }}>
+          <AvatarFallback className="bg-gray-400 text-white flex items-center justify-center font-bold rounded-full">
             {user?.username?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       ),
       onClick: () => navigate(`/profile/${user?._id}`),
-    }
+    },
     
-    
+
+    {
+      name: "Logout",
+      icon: <LogOut />,
+      onClick: LogoutHandler,
+    },
     
   ];
 
@@ -166,12 +157,60 @@ const LeftSidebar = () => {
           <p
             key={index}
             onClick={item.onClick}
+
+            
             className="flex flex-col items-center py-2 md:flex-row md:items-center md:py-3 hover:bg-gray-100 w-full cursor-pointer"
           >
             <span className="text-2xl">{item.icon}</span>
             <span className="text-xs mt-1 md:ml-4 md:mt-0 md:text-base hidden md:block">
               {item.name}
             </span>
+            {item.name === "Notifications" && likeNotification.length > 0 && (
+           <Popover>
+           <PopoverTrigger asChild>
+             <div className="relative">
+               <Button
+                 size="icon"
+                 className="rounded-full h-7 w-7 text-xs flex items-center justify-center bg-red-600 hover:bg-red-600"
+               >
+                 {likeNotification?.length || 0}
+               </Button>
+             </div>
+           </PopoverTrigger>
+           <PopoverContent className="w-64 p-4">
+             <div>
+               {likeNotification?.length === 0 ? (
+                 <p className="text-sm text-gray-500">No new notifications</p>
+               ) : (
+                 likeNotification.map((notification, index) => (
+                   <div
+                     key={`${notification.userId}-${index}`}
+                     className="flex items-center gap-2 my-2"
+                   >
+                     <Avatar>
+                       <AvatarImage
+                         src={
+                           notification.userDetails?.profilePicture ||
+                           "https://via.placeholder.com/40"
+                         }
+                       />
+                       <AvatarFallback>CN</AvatarFallback>
+                     </Avatar>
+                     <p className="text-sm">
+                       <span className="font-bold">
+                         {notification.userDetails?.username || "Unknown"}
+                       </span>{" "}
+                       liked your post
+                     </p>
+                   </div>
+                 ))
+               )}
+             </div>
+           </PopoverContent>
+         </Popover>
+         
+          
+            )}
           </p>
         ))}
       </nav>
@@ -232,25 +271,12 @@ const LeftSidebar = () => {
                 className="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600"
                 disabled={isLoading}
               >
-                {isLoading ? 'Sharing...' : 'Share'}
+                {isLoading ? "Sharing..." : "Share"}
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Logout Button (Hidden on Mobile) */}
-      <div className="hidden md:flex md:mt-auto md:mb-4">
-        <button
-          onClick={LogoutHandler}
-          className="flex flex-col items-center py-2 md:flex-row md:items-center md:py-3 w-full bg-transparent hover:bg-gray-100"
-        >
-          <span className="text-2xl">
-            <LogOut />
-          </span>
-          <span className="ml-4 text-base">Logout</span>
-        </button>
-      </div>
     </div>
   );
 };

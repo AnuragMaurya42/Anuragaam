@@ -8,12 +8,13 @@ import EditProfile from "./components/EditProfile.jsx";
 import Chatpage from "./components/Chatpage.jsx";
 import ChatWithUser from "./components/ChatWithUser.jsx";
 import { io } from "socket.io-client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice.js";
 import { setOnlineUsers } from "./redux/chatSlice.js";
+import { setLikeNotification } from "./redux/rtnSlice.js";
 
-// Fixing Browser Router
+// Browser Router Configuration
 const browserRouter = createBrowserRouter([
   {
     path: "/",
@@ -46,7 +47,7 @@ const browserRouter = createBrowserRouter([
     element: <Login />,
   },
   {
-    path: "/signup",  // Fixed missing slash here
+    path: "/signup",
     element: <Signup />,
   },
 ]);
@@ -54,32 +55,37 @@ const browserRouter = createBrowserRouter([
 function App() {
   const { user } = useSelector((store) => store.auth);
   const dispatch = useDispatch();
+  const {socket} = useSelector(store=>store.socketio);
 
   useEffect(() => {
-    let socketio; // Declaring socketio here for proper scoping
     if (user) {
-      socketio = io("http://localhost:8000", {
+      const socketio = io('http://localhost:8000', {
         query: {
-          userId: user?._id,
+          userId: user?._id
         },
-        transports: ["websocket"],
+        transports: ['websocket']
       });
       dispatch(setSocket(socketio));
-      // Listen for online users
-      socketio.on("getOnlineUsers", (onLineUsers) => {
-        dispatch(setOnlineUsers(onLineUsers));
-      });
-    } else if (socketio) {
-      socketio.close();
-      dispatch(setSocket(null));
-    }
 
-    return () => {
-      if (socketio) {
+
+      // Listen for online users
+       socketio.on('getOnlineUsers', (onlineUsers) => {
+        dispatch(setOnlineUsers(onlineUsers));
+      });
+
+      // Listen for notifications
+      socketio.on('notification', (notification) => {
+        dispatch(setLikeNotification(notification));
+      });
+      return () => {
         socketio.close();
         dispatch(setSocket(null));
       }
-    };
+    }
+    else if (socket) {
+      socket.close();
+      dispatch(setSocket(null));
+    }
   }, [user, dispatch]);
 
   return <RouterProvider router={browserRouter} />;

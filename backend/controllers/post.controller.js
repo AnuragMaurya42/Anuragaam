@@ -3,6 +3,7 @@ import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
 import cloudinary from "../utils/cloudinary.js";
+import { getReceiverSocketId,io} from "../socket/socket.js";
 
 
 export const addPost = async (req, res) => {
@@ -113,11 +114,15 @@ export const getUserPost = async (req, res) => {
 // write a code to like or unlike the any  post
 
 export const likePost = async (req, res) => {
+  console.log("like hua hai ");
+  
   try {
 
     const likesPersonId = req.id;
   
     const postId = req.params.id;
+    console.log(postId);
+    
     
     const post = await Post.findById(postId);
 
@@ -136,6 +141,20 @@ export const likePost = async (req, res) => {
 
 // implement socket io for real time 
 
+ const user = await User.findById(likesPersonId).select('username profilePicture');
+ const postOwnerId = post.author.toString();
+ if(postOwnerId!==  likesPersonId){
+ const notification = {
+  type:'like',
+  userId:likesPersonId,
+  userDetails:user,
+  postId,
+  message:'you post was liked'
+ }
+ const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+ io.to(postOwnerSocketId).emit('notification',notification);
+
+ }
 
     return res.status(200).json({
     
@@ -172,6 +191,21 @@ export const dislikePost = async (req, res) => {
 
     await post.updateOne({ $pull: { likes: dislikesPersonId } });
     await post.save();
+    // socket io for real time notificatiion 
+    const user = await User.findById(dislikesPersonId).select('username profilePicture');
+    const postOwnerId = post.author.toString();
+    if(postOwnerId!==  dislikesPersonId){
+    const notification = {
+     type:'dislike',
+     userId:dislikesPersonId,
+     userDetails:user,
+     postId,
+     message:'you post was liked'
+    }
+    const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+    io.to(postOwnerSocketId).emit('notification',notification);
+   
+    }
 
     return res.status(200).json({
       message: "Post disliked successfully",

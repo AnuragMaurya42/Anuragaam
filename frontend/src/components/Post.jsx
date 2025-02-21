@@ -91,21 +91,27 @@ const Post = ({ post }) => {
     }
   };
 
-  const likeOrDislikeHandler = async () => {
+  const likedOrDislikedHandler = async () => {
+
     try {
       const action = liked ? "dislike" : "like";
-
+      console.log("post id" , post);
+      console.log("action =" , action);
+      
+      
+  
+      // Send request to like or dislike the post
       const res = await axios.get(
-        `http://localhost:8000/api/v1/post//${post._id}/${action}`,
+        `http://localhost:8000/api/v1/post/${post._id}/${action}`,
         { withCredentials: true }
       );
-      console.log(res.data);
+  
       if (res.data.success) {
-        const updatedLikes = liked ? postLike - 1 : postLike + 1;
-        setPostLike(updatedLikes);
+        // Toggle the liked state and update the like count
         setLiked(!liked);
-
-        // apne post ko update krunga
+        setPostLike((prevCount) => (liked ? prevCount - 1 : prevCount + 1));
+  
+        // Update Redux Store
         const updatedPostData = posts.map((p) =>
           p._id === post._id
             ? {
@@ -117,12 +123,15 @@ const Post = ({ post }) => {
             : p
         );
         dispatch(setPosts(updatedPostData));
+  
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error while liking/disliking post:", error);
+      toast.error("Something went wrong while updating the like status.");
     }
   };
+  
 
   const commentHandler = async () => {
     if (!text.trim()) return;
@@ -264,7 +273,7 @@ const Post = ({ post }) => {
       {/* Post Actions */}
       <div className="flex items-center gap-4 text-2xl px-4 py-2 text-gray-600 dark:text-gray-300">
         <FaHeart
-          onClick={likeOrDislikeHandler}
+          onClick={likedOrDislikedHandler}
           className={`cursor-pointer transition duration-200 ${
             liked ? "text-red-500" : "text-gray-500"
           }`}
