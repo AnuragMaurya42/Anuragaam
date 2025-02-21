@@ -1,5 +1,6 @@
 // chat karne ke liye banane ja rahe hai 
 import {Conversation} from '../models/conversation.model.js';
+import { getReceiverSocketId } from '../socket/socket.js';
 
 export const sendMessage = async(req , res)=>{
 
@@ -24,9 +25,9 @@ conversation = await Conversation.create({
  }
 
  const Message = await Message.create({
-    senderId: senderId,
-    receiverId: receiverId,
-    message: message,
+    senderId,
+    receiverId,
+    message,
     });
 
 if(conversation) conversation.messages.push(Message._id);
@@ -35,6 +36,11 @@ await Promise.all([Message.save(), conversation.save()]);
 
 // implement socket.io to send message to the receiver in real time 
 
+const receiverSocketId = getReceiverSocketId(receiverId);
+
+if(receiverSocketId){
+    io.to(receiverSocketId).emit('newMessage ' , conversation);
+}
         
 
 return res.status(200).json({message: 'Message sent successfully'});

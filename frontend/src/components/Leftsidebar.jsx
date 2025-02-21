@@ -12,13 +12,15 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
-import { setAuthUser } from '../redux/authSlice.js';
-
+import { setAuthUser } from '../redux/authSlice';
+import { setPosts } from '../redux/postSlice'; // Import setPosts action
+import Posts from './Posts.jsx';
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector(store => store.auth);
+  const { user } = useSelector((store) => store.auth);
+  const { posts } = useSelector((store) => store.post);
 
   // State for the Create Post dialog
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,10 +31,9 @@ const LeftSidebar = () => {
   // Logout handler
   const LogoutHandler = async () => {
     try {
-      const res = await axios.get(
-        'http://localhost:8000/api/v1/user/logout',
-        { withCredentials: true }
-      );
+      const res = await axios.get('http://localhost:8000/api/v1/user/logout', {
+        withCredentials: true,
+      });
       if (res.data.message) {
         dispatch(setAuthUser(null));
         navigate('/login');
@@ -40,7 +41,7 @@ const LeftSidebar = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Logout failed.');
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -51,23 +52,17 @@ const LeftSidebar = () => {
 
   // Function to handle post submission
   const handlePostSubmit = async () => {
-
-
     if (!postImage) {
       toast.error('Please provide an image.');
       return;
     }
-
-    
 
     const formData = new FormData();
     formData.append('image', postImage);
     formData.append('caption', caption);
 
     try {
-      
       setIsLoading(true); // Start the loader
-   
 
       const res = await axios.post(
         'http://localhost:8000/api/v1/post/addpost',
@@ -79,8 +74,10 @@ const LeftSidebar = () => {
           withCredentials: true,
         }
       );
-      // alert( caption);
+
       if (res.data.success) {
+        // Update the posts in Redux store
+        dispatch(setPosts([res.data.post, ...posts]));
         toast.success(res.data.message);
         setIsDialogOpen(false);
         setPostImage(null);
@@ -89,8 +86,10 @@ const LeftSidebar = () => {
         toast.error(res.data.message || 'Failed to create post.');
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to create post.......');
-      console.log(error);
+      toast.error(
+        error.response?.data?.message || 'Failed to create post.'
+      );
+      console.error(error);
     } finally {
       setIsLoading(false); // Stop the loader
     }
@@ -112,20 +111,44 @@ const LeftSidebar = () => {
     {
       name: 'Messages',
       icon: <MessageCircle />,
-      onClick: () => navigate('/messages'),
+      onClick: () => navigate('/chat'),
     },
+
+
+
     {
       name: 'Profile',
       icon: (
-        <Avatar className="w-6 h-6">
-          <AvatarImage src={user?.profilePicture} alt={user?.username} />
-          <AvatarFallback>
+        <Avatar style={{ width: '20px', height: '20px', borderRadius: '50%', overflow: 'hidden' }}>
+          <AvatarImage 
+            src={user?.profilePicture || 'https://via.placeholder.com/150'} 
+            alt={user?.username} 
+            style={{ 
+              width: '50%', 
+              height: '50%', 
+              objectFit: 'cover' 
+            }} 
+          />
+          <AvatarFallback style={{ 
+            backgroundColor: '#ccc', 
+            color: '#fff', 
+            width: '100%', 
+            height: '100%', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            borderRadius: '50%',
+          }}>
             {user?.username?.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       ),
-      onClick: () => navigate(`/profile/${user?.username}`),
-    },
+      onClick: () => navigate(`/profile/${user?._id}`),
+    }
+    
+    
+    
   ];
 
   return (
@@ -138,7 +161,7 @@ const LeftSidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex justify-between px-4 md:flex-col md:justify-start md:mt-4 ">
+      <nav className="flex justify-between px-4 md:flex-col md:justify-start md:mt-4">
         {menuItems.map((item, index) => (
           <p
             key={index}
@@ -181,7 +204,7 @@ const LeftSidebar = () => {
                 <img
                   src={URL.createObjectURL(postImage)}
                   alt="Preview"
-                  className="w-full h-64 object-cover rounded"
+                  className="w-full object-contain rounded"
                 />
               </div>
             )}

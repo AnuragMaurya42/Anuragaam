@@ -3,8 +3,43 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDatauri from "../utils/datauri.js";
 import { Post } from "../models/post.model.js";
+import cloudinary from "../utils/cloudinary.js";
+import { log } from "console";
 
 //  registration  ke liye hai ye function
+
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('username profilePicture');
+    res.status(200).json({ users, success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error', success: false });
+  }
+};
+
+
+export const getSuggestedUsers = async (req, res) => {
+  alert("aaa")
+  try {
+      const suggestedUsers = await User.find({ _id: { $ne: req.id } }).select("-password");
+      
+      if (!suggestedUsers) {
+          return res.status(400).json({
+              message: 'Currently do not have any users',
+          })
+      };
+      return res.status(200).json({
+          success: true,
+          users: suggestedUsers
+      })
+  } catch (error) {
+      console.log(error);
+  }
+};
+
+
 
 export const register = async (req, res) => {
   try {
@@ -159,16 +194,23 @@ export const getprofile = async (req, res) => {
 
 // user profile update ke liye hai ye function
 export const updateprofile = async (req, res) => {
+  
   try {
+    console.log("update wala click hua hai");
+    
     const userId = req.id;
+    console.log("User ID:", userId);
     const { bio, gender } = req.body;
+    console.log("Received bio:", bio);
+    console.log("Received gender:", gender);
+    
     const profilePicture = req.file;
-
     let cloudResponse;
 
     if (profilePicture) {
       const fileUri = getDatauri(profilePicture);
       cloudResponse = await cloudinary.uploader.upload(fileUri);
+      console.log("Cloudinary upload response:", cloudResponse);
     }
 
     const user = await User.findById(userId);
@@ -184,7 +226,9 @@ export const updateprofile = async (req, res) => {
     if (profilePicture) user.profilePicture = cloudResponse.secure_url;
     await user.save();
     return res.status(200).json({ message: "Profile updated", success: true });
-  } catch (error) {
+  }
+  
+  catch (error) {
     console.log(error);
     return res.status(500).json({
       message: "Internal server error",
@@ -196,7 +240,11 @@ export const updateprofile = async (req, res) => {
 export const followorunfollow = async (req, res) => {
   try {
     const follwkarnevala = req.id;
-    const jiskofollowkiya = req.params.userId;
+    const jiskofollowkiya = req.params.id;
+
+    console.log("follow karne wala ki id" , follwkarnevala);
+    console.log(" jisko follow karne wala ki id" , jiskofollowkiya);
+    
 
     if (follwkarnevala === jiskofollowkiya) {
       return res

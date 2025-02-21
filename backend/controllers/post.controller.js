@@ -27,7 +27,6 @@ export const addPost = async (req, res) => {
 
     // Optimize the image before uploading it to Cloudinary
     const optimizedImage = await sharp(image.buffer)
-      .resize({ width: 500, height: 500 })
       .toFormat('jpeg', { quality: 80 })
       .toBuffer();
 
@@ -115,15 +114,17 @@ export const getUserPost = async (req, res) => {
 
 export const likePost = async (req, res) => {
   try {
-    // get the post id from the request
 
-    const likesPersonId = req.params.id;
-    const postId = req.params.postId;
+    const likesPersonId = req.id;
+  
+    const postId = req.params.id;
+    
     const post = await Post.findById(postId);
 
     if (!post) {
+      console.log("yrrrr post kaha hai ");
       return res.status(404).json({
-        message: "Post not found",
+        message: "Post not rgkjerfound",
         success: false,
       });
     }
@@ -133,7 +134,11 @@ export const likePost = async (req, res) => {
     await post.updateOne({ $addToSet: { likes: likesPersonId } });
     await post.save();
 
+// implement socket io for real time 
+
+
     return res.status(200).json({
+    
       message: "Post liked successfully",
       success: true,
     });
@@ -148,11 +153,15 @@ export const dislikePost = async (req, res) => {
   try {
     // get the post id from the request
 
-    const dislikesPersonId = req.params.id;
-    const postId = req.params.postId;
+    const dislikesPersonId = req.id;
+    const postId = req.params.id;
     const post = await Post.findById(postId);
 
+
+
+
     if (!post) {
+      console.log("post nahi mil raha hai dislike ke liye");
       return res.status(404).json({
         message: "Post not found",
         success: false,

@@ -8,17 +8,23 @@ const MainLayout = () => {
   const [isRightOpen, setIsRightOpen] = useState(true);
 
   return (
-    <div className="flex h-screen">
+    <div className="relative flex ">
       {/* Left Sidebar */}
-      <LeftSidebar isOpen={isLeftOpen} setIsOpen={setIsLeftOpen} />
+      <div className="fixed top-0 left-0 z-50">
+        <LeftSidebar isOpen={isLeftOpen} setIsOpen={setIsLeftOpen} />
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-grow overflow-y-auto p-4 bg-gray-100 transition-all duration-500">
-        <Outlet />
+      {/* Main Content Area */}
+      <div className="flex-grow flex justify-center items-center p-4 bg-gray-100 transition-all duration-500">
+        <div className="w-full md:w-3/4 lg:w-1/2">
+          <Outlet />
+        </div>
       </div>
 
       {/* Right Sidebar */}
-      <RightSidebar isOpen={isRightOpen} setIsOpen={setIsRightOpen} />
+      <div className="fixed top-0 right-0 z-50">
+        <RightSidebar isOpen={isRightOpen} setIsOpen={setIsRightOpen} />
+      </div>
     </div>
   );
 };

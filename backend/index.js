@@ -11,10 +11,11 @@ import MessageRoutes from './routes/message.route.js';
 import userRoute from "./routes/user.route.js";
 // import postRoute from "./routes/post.route.js";
 // import messageRoute from "./routes/message.route.js";
+import { app ,server} from './socket/socket.js';
 
 dotenv.config({});
 
-const app = express(); // Moved above to define before usage
+// const app = express(); // Moved above to define before usage
 
 const PORT = process.env.PORT || 3000;
 // Middleware
@@ -48,7 +49,7 @@ app.use("/api/v1/message", MessageRoutes);
 
 
 // Start Server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB();
     console.log("MongoDB URI:", process.env.MONGO_URI);
     console.log(`Server is running on port ${PORT}`);
