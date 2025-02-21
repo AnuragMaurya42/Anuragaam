@@ -12,12 +12,16 @@ import userRoute from "./routes/user.route.js";
 // import postRoute from "./routes/post.route.js";
 // import messageRoute from "./routes/message.route.js";
 import { app ,server} from './socket/socket.js';
+import path from 'path';
 
 dotenv.config({});
 
+const PORT = process.env.PORT || 3000;
+const __dirname = path.resolve();
+console.log(__dirname);
+
 // const app = express(); // Moved above to define before usage
 
-const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
@@ -30,21 +34,17 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Routes
-app.get('/', (req, res) => {
-    return res.status(200).json({
-        message: "Hello from backend",
-        success: true,
-    
-    });
-});
-
 
 // yaha pe routes dalne hain
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", PostRoutes);
 app.use("/api/v1/message", MessageRoutes);
 
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
+app.get("*", (req,res)=>{
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+})
 
 
 
