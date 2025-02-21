@@ -1,6 +1,7 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 const Signup = () => {
@@ -10,8 +11,10 @@ const Signup = () => {
     password: ''
   });
 
-  const[loading,setloading] = useState(false)
+  const[loading,setloading] = useState(false);
+  const navigate = useNavigate();
 
+const { user } = useSelector((store) => store.auth);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -60,6 +63,11 @@ finally{
 
 
   };
+  useEffect(()=>{
+    if(user){
+      navigate('/')
+    }
+    },[])
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-purple-500 to-indigo-600">

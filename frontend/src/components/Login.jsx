@@ -1,8 +1,8 @@
 
 import { setAuthUser } from '../redux/authSlice.js';
 import axios from 'axios'; 
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -13,6 +13,7 @@ const Login = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -56,6 +57,12 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
+useEffect(()=>{
+if(user){
+  navigate('/')
+}
+},[])
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-500 to-indigo-600">
