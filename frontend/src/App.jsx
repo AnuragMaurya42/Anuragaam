@@ -41,6 +41,10 @@ const browserRouter = createBrowserRouter([
         path: "/chat/:id",
         element:<ProtectedRoute><ChatWithUser /></ProtectedRoute> ,
       },
+       {
+        path: "/search",
+        element:<ProtectedRoute><Search /></ProtectedRoute> ,
+      },
     ],
   },
   {
