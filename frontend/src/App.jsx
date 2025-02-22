@@ -4,6 +4,7 @@ import Home from "./components/Home.jsx";
 import Signup from "./components/Signup.jsx";
 import Login from "./components/Login.jsx";
 import Profile from "./components/Profile.jsx";
+import Search from "./components/Search.jsx";
 import EditProfile from "./components/EditProfile.jsx";
 import Chatpage from "./components/ChatPage.jsx";
 import ChatWithUser from "./components/ChatWithUser.jsx";
