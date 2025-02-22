@@ -31,7 +31,7 @@ const UserListWithSearch = () => {
   useEffect(() => {
     setFilteredUsers(prevUsers =>
       prevUsers.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        user.username?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [searchTerm]);
@@ -73,10 +73,10 @@ const UserListWithSearch = () => {
                   className="w-full h-full object-cover rounded-full"
                 />
                 <AvatarFallback className="bg-gray-300 text-gray-800 font-bold">
-                  {user.username.charAt(0).toUpperCase()}
+                  {user.username?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="font-semibold text-lg">{user.name}</span>
+              <span className="font-semibold text-lg">{user.username}</span>
             </li>
           ))}
         </ul>
