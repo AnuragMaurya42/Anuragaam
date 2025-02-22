@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 
-const UserListWithSearch = () => {
+const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [users, setUsers] = useState([]); // Store the original list of users
+  const [filteredUsers, setFilteredUsers] = useState([]); // Store the filtered list
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -16,7 +17,8 @@ const UserListWithSearch = () => {
       try {
         const res = await axios.get('https://anuragaam-app.onrender.com/api/v1/user/users');
         if (res.data.success) {
-          setFilteredUsers(res.data.users);
+          setUsers(res.data.users);
+          setFilteredUsers(res.data.users); // Initialize both lists
         }
       } catch (err) {
         setError('Error fetching users');
@@ -28,16 +30,20 @@ const UserListWithSearch = () => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    setFilteredUsers(prevUsers =>
-      prevUsers.filter(user =>
-        user.username?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [searchTerm]);
-
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleSearch = () => {
+    if (searchTerm.trim() === '') {
+      setFilteredUsers(users); // Reset to original list if search is cleared
+    } else {
+      setFilteredUsers(
+        users.filter(user =>
+          user.username?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
   };
 
   const handleUserClick = (userId) => {
@@ -47,13 +53,21 @@ const UserListWithSearch = () => {
   return (
     <div className="p-4 bg-white shadow rounded-lg max-w-md mx-auto mt-10">
       <h1 className="text-2xl font-semibold mb-4">All Users</h1>
-      <input
-        type="text"
-        placeholder="Search Users..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="border p-2 rounded w-full mb-4"
-      />
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search Users..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="border p-2 rounded w-full"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600"
+        >
+          Search
+        </button>
+      </div>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
@@ -85,4 +99,4 @@ const UserListWithSearch = () => {
   );
 };
 
-export default UserListWithSearch;
+export default Search;
